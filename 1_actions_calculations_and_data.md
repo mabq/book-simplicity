@@ -25,9 +25,9 @@ Values are stored in memory — to access a value you need it's address in memor
 
 Mutability is the ability of a value to change without changing it's address in memory.
 
-Primitive values are immutable — operations never mutate primitive values, new values with new addresses are created every time.
+Primitive values are immutable — operations create new values with new addresses every time.
 
-Objects are mutable — operations mutate objects, the value on the address changes.
+Objects are mutable — operations mutate objects, the address remains the same but the value changes.
 
 #### Variables and Scope
 
@@ -35,7 +35,7 @@ Variables are records that bind name identifiers to addresses in memory.
 
 Only variables defined with `let` are allowed to change it's address value after declaration — don't confuse rebinding with mutability, one is a property of the variable and the other one is a property of the data.
 
-Scopes determine access to variables — a variable belongs to the scope where it was defined.
+Scopes determine accessibility to variables — a variable belongs to the scope where it was defined.
 
 There are 3 types of scopes:
 - *Global scope* — parent of all scopes.
@@ -52,9 +52,11 @@ Variables defined with `const` and `let` have block scope. Avoid `var` which has
 
 #### Shared variables
 
-Data bound to a variable that is accessible by many scopes is shared by all of them.
+Data bound to a variable which is accessible from many scopes is shared by all of them.
 
-> Relying on shared mutable data has a lot of implications that makes code much more complex and bug prone — notice that having access to a shared variable that allows rebinding has the same effect as mutable data, even when it is not.
+Relying on shared mutable data has a lot of implications that makes code much more complex and bug prone.
+
+> Having access to a shared variable that allows rebinding has the same effect as mutable data — data hold in closure is not shared.
 
 #### Equality
 
@@ -88,44 +90,54 @@ Advantages of data over calculations:
 
 Calculations are functions from inputs to outputs. No matter when they are run, or how many times they are run, they will always give the same output for the same inputs.
 
-#### Inputs
+Only arguments are accepted as inputs.
 
-All inputs must be explicit.
+Only the returned value is accepted as an output.
 
-A function is called with an argument list containing zero or more expressions, separated by commas. Each of those expressions is evaluated and bound to a parameter of the function.
+> Any implicit input or implicit output injects *time dependability*, turning a function into an action.
+
+#### Objects as inputs
+
+A function is called with a list of expressions as arguments, before running the function those expressions are turned into values, those values are stored in memory and it's addresses are bound to function parameters — function local variables that allow rebinding.
+
+Remember, operations on immutable data will always create new data, so applying an operation on a local variable bound to immutable data will simply create new data, which has no effect whatsoever on any outer scope.
+
+Objects on the other hand are mutable values, applying an operation on a local variable bound to an object will mutate an object that is also accessible from outer scope, turning a function into an action.
+
+#### Copy-on-write
+
+*Copy-on-write* technique dictates that when in need to mutate an object, always;
+
+1. Make a copy
+2. Work on the copy
+3. Return the copy
+
+#### Defensive-copying
+
+*Copy-on-write* alone is not enough when working with untrusted code.
+
+> Never share memory addresses of mutable values with untrusted code
+
+Always:
+
+1. Make a deep copy of the object
+2. Let the untrusted code work with the copy
+3. Make a deep copy of the returned value
+4. Discard the returned value
+
+#### Deep freeze and structural sharing
+
+....here....
 
 
 <!-- ------------------------------------------------------------- -->
 
-No implicit inputs — never read from shared variables. Data hold in closures is fine because it is not shared between scopes.
 
+*Copy-on-write* and *defensive-copying* are effective but expensive. Use a library like [Immer](https://github.com/immerjs/immer) which implements immutability without affecting too much on performance due to structural sharing (deep-freezing source objects before relying on them, instead of copying them).
 
-
-
-
-
-
-No explicit outputs — never write to shared variables and never interact with the world.
-
-Calculations are *referentially transparent* because a call to a calculation can be replaced by its result.
-
-Calculations are *time independent* because 
-
-No matter when they are run, or how many times they are run, they will always give the same output for the same inputs.
-
-The result of running a calculation never depends on outer scope. The only effect of running a calculations is its returned value.
-
-
-
-Any function that does *not* depend on time is a calculation.
-
-Calculations depend on their arguments and their arguments only, always return value and never affect anything outside the calculation scope. It doesn't matter when they are run, or how many times they are run, **they** will always give the same output for the same inputs.
-
-Calculations are *referentially transparent* — meaning that the function execution can be replaced with the returned value and nothing is affected.
+Producing immutable objects is slower, but comparing references is much much faster than doing deep value comparisons. Reading and comparing happen more ofter than writing.
 
 Calculations can be composed of smaller calculations and data. Decompose a calculation into smaller calculations until the implementation becomes obvious, then compose them back.
-
-Beware, <mark>***dependence on time spread all over***</mark>, all code depending on an action becomes an action itself — no matter how nested the action is in the call-stack.
 
 Compared to actions, calculations offer the following **advantages**:
 
@@ -135,24 +147,14 @@ Compared to actions, calculations offer the following **advantages**:
 - Ready for distributed systems.
 - Easier to be analyzed by a machine — static analysis.
 
-<!-- ------------------------------------------------------------- -->
 
-
-This means that primitive values have built in *copy-on-write* behavior, objects don't. When you pass objects to functions they become *shared mutable state* by default.
-
-Functions that read from or write to *shared mutable state* are actions because <mark>*shared mutable state* is time dependent</mark> (the value can be different at different times). **Calculations require immutable inputs and immutable outputs**.
-
-*Copy-on-write* and *defensive-copying* are effective but expensive. Use a library like [Immer](https://github.com/immerjs/immer) which implements immutability without affecting too much on performance due to structural sharing (deep-freezing source objects before relying on them, instead of copying them).
-
-Producing immutable objects is slower, but comparing references is much much faster than doing deep value comparisons. Reading and comparing happen more ofter than writing.
-
-
-
-
-<!-- ------------------------------------------------------------- -->
 
 
 ## Actions
+
+Actions spread — one little action somewhere and it spreads all over.
+
+<!-- ------------------------------------------------------------- -->
 
 In JavaScript, we use functions to implement actions.
 
