@@ -1,6 +1,9 @@
 # Distinguishing actions, calculations and data
 
-> Prefer data to calculations and calculations to actions.
+> 🚀 &nbsp; Prefer data to calculations and calculations to actions.
+
+<!-- ------------------------------------------------------------- -->
+
 
 ## Data
 
@@ -19,21 +22,23 @@ The set of types consists of:
 
 - *Objects* — collections of properties (key-value pairs).
 
-#### Mutability
+### Mutability
 
-Values are stored in memory — to access a value you need it's address in memory, if you have access to the address you have access to the value.
+Values are stored in memory — to access a value you need it's address in memory.
 
-Mutability is the ability of a value to change without changing it's address in memory.
+Mutability is the ability of a value to mutate without changing it's address in memory.
 
-Primitive values are immutable — operations create new values with new addresses every time.
+Primitive values are immutable — applying an operation on a primitive value will always create a new value (stored in a different address in memory).
 
-Objects are mutable — operations mutate objects, the address remains the same but the value changes.
+Objects are mutable — applying an operation on an object will mutate the object (at the given address in memory).
 
-#### Variables and Scope
+### Variables and Scope
 
 Variables are records that bind name identifiers to addresses in memory.
 
-Only variables defined with `let` are allowed to change it's address value after declaration — don't confuse rebinding with mutability, one is a property of the variable and the other one is a property of the data.
+Only variables defined with `let` are allowed to change it's address value after declaration (a.k.a rebinding) — don't confuse rebinding with mutability, rebinding is a property of the variable, mutability is a property of the data.
+
+> Immutable data bound to a `let` variable has the same effect as mutable data bound to a `const` variable.
 
 Scopes determine accessibility to variables — a variable belongs to the scope where it was defined.
 
@@ -48,126 +53,122 @@ Scopes nest — inner scopes have access to outer scopes but outer scopes do not
 
 e.g. code inside scope `F` has access to all data bound to variables declared in scopes `D`, `B` and `Global Scope` but does not have access to data bound to variables declared in scopes `A`, `E` and `C`.
 
-Variables defined with `const` and `let` have block scope. Avoid `var` which has function scope.
+Variables defined with `const` and `let` have block scope, avoid `var` which has function scope and is *hoisted*.
 
-#### Shared variables
 
-Data bound to a variable which is accessible from many scopes is shared by all of them.
 
-Relying on shared mutable data has a lot of implications that makes code much more complex and bug prone.
+### Equality
 
-> Having access to a shared variable that allows rebinding has the same effect as mutable data — data hold in closure is not shared.
+Primitive values are compared by value — variables do not need to point to the same address in memory.
 
-#### Equality
+Objects are compared by address — variables need to point to the same address in memory.
 
-Primitive values are compared by value — comparing two variables with different addresses but same values in memory will return `true`. It's easier to think that immutables values exist only once and that all variables that need the same value point to the same address.
-
-Objects are compared by address — comparing two variables with different addresses but values in memory are objects with the exact same properties and values will return `false`.
-
-#### Structure
+### Composition
 
 Data can only be composed of more data.
 
 Structure is what gives meaning to data — choosing the right data structure is critical for a straight forward implementation.
 
-#### Data and Functional Programming
+### Data and Functional Programming
 
 Functional programming looks at data as ***facts about events*** — a record of something that happened.
 
-Never mutate data — like accounting, functional programming relies on *record-keeping*.
+Like accounting, functional programming relies on *record-keeping* — once data is created it should never change.
 
-Separate the processes that generate data from the ones that consume it.
+Immutable data structures:
 
-Advantages of data over calculations:
+- Avoid time dependability — functions that do not depend on time are much simpler and secure.
+- Allow for efficient change detection — if the reference to an object didn't change, the object itself did not change.
+- Make cloning relatively cheap — unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
 
-- *Serializable* — no problem being transmitted over a wire or stored to disk and read back later.
-- *Comparable* — easily compare two pieces of data to see if they are equal or not.
-- *Open for interpretation* — data can be interpreted in multiple ways.
+Generally speaking, these benefits can be achieved by making sure you never change any property of an object, array or map, but by always creating an altered copy instead — see notes about Immer below.
 
+### Why data over calculations?
+
+- Data is *serializable* — no problem being transmitted over a wire or stored to disk and read back later.
+- Data is *comparable* — easily compare two pieces of data to see if they are equal or not.
+- Data is *open for interpretation*.
+
+
+<br>
 
 
 ## Calculations
 
-Calculations are functions from inputs to outputs. No matter when they are run, or how many times they are run, they will always give the same output for the same inputs.
+Calculations are functions with zero implicit inputs and zero side-effects.
 
-Only arguments are accepted as inputs.
+> 🔥 &nbsp; Any code that injects time-dependability into a function is an implicit input. Any code that provokes a *side-effect* is an implicit output.
 
-Only the returned value is accepted as an output.
+No matter when they are run, or how many times they are run, calculations will always give the same output for the same inputs — zero *side-effects*.
 
-> Any implicit input or implicit output injects *time dependability*, turning a function into an action.
+### Objects as explicit inputs
 
-#### Objects as inputs
+Function arguments — any other input is implicit.
 
-A function is called with a list of expressions as arguments, before running the function those expressions are turned into values, those values are stored in memory and it's addresses are bound to function parameters — function local variables that allow rebinding.
+A function is called with a list of expressions as arguments, before running the function those expressions are turned into values, those values are stored in memory and it's addresses are bound to the variables initialized by function parameters — local variables act like `let` variables.
 
-Remember, operations on immutable data will always create new data, so applying an operation on a local variable bound to immutable data will simply create new data, which has no effect whatsoever on any outer scope.
+> Local variables and external variables point to the same addresses in memory.
 
-Objects on the other hand are mutable values, applying an operation on a local variable bound to an object will mutate an object that is also accessible from outer scope, turning a function into an action.
+Applying operations on local variables bound to immutable values will simply create new values, having no effect on any outer scope. On the other hand, **applying operations on local variables bound to objects will mutate the same objects that are accessible from outer scopes** — turning our function into an action.
 
-#### Copy-on-write
+> 🚀 &nbsp; Always use Immer to apply changes to objects.
 
-*Copy-on-write* technique dictates that when in need to mutate an object, always;
+*Copy-on-write* dictates that we should always make a copy of the object and modify it instead of modifying the original — only useful for implementing immutability within code that we control.
 
-1. Make a copy
-2. Work on the copy
-3. Return the copy
+*Defensive-copying* is a complementary discipline that can be used when working with untrusted code, it dictates that we should always make ***deep-copies*** as data leaves or enters our code.
 
-#### Defensive-copying
+While effective, the correct implementation of both disciplines throughout the  codebase is expensive and cumbersome.
 
-*Copy-on-write* alone is not enough when working with untrusted code.
+[Immer](https://github.com/immerjs/immer) is a tiny library that simplifies handling immutable data structures, its key benefits are:
 
-> Never share memory addresses of mutable values with untrusted code
+1. Boilerplate reduction — less noise, more concise code
+2. No new APIs or data structures
+3. Structural sharing out of the box — better performance
+4. Object freezing out of the box
+5. Easy deep updates
+6. No accidental mutations
 
-Always:
+*Defensive-copying* works by never sharing memory addresses of mutable data with untrusted code — making expensive deep-copies every time data enters or leaves our safe-zone.
 
-1. Make a deep copy of the object
-2. Let the untrusted code work with the copy
-3. Make a deep copy of the returned value
-4. Discard the returned value
+Immer works by deep-freezing objects before relying on them — new copies are fast shallow copies that use structural sharing.
 
-#### Deep freeze and structural sharing
+### Composition
 
-....here....
+Calculations can be composed of smaller calculations and data. ***Decompose a calculation into smaller calculations until the implementation becomes obvious***, then compose them back.
 
+### Why calculations over data?
 
-<!-- ------------------------------------------------------------- -->
-
-
-*Copy-on-write* and *defensive-copying* are effective but expensive. Use a library like [Immer](https://github.com/immerjs/immer) which implements immutability without affecting too much on performance due to structural sharing (deep-freezing source objects before relying on them, instead of copying them).
-
-Producing immutable objects is slower, but comparing references is much much faster than doing deep value comparisons. Reading and comparing happen more ofter than writing.
-
-Calculations can be composed of smaller calculations and data. Decompose a calculation into smaller calculations until the implementation becomes obvious, then compose them back.
-
-Compared to actions, calculations offer the following **advantages**:
-
-- No need to worry about what else is running at the same time, what has run in the past and what will run in the future or how many times you have already run it already.
-- More composable.
-- Much easier to test.
-- Ready for distributed systems.
-- Easier to be analyzed by a machine — static analysis.
+- No time dependability — no need to worry about what else is running at the same time, what has run in the past, what will run in the future or how many times you have already run it already
+- More composable — simple functions with no side-effects are much more reusable
+- Much easier to test — no need to simulate state, far less scenarios to test
+- Ready for distributed systems — a consequence of no time dependability
+- Easier to be analyzed by a machine — static analysis
 
 
+<br>
 
 
 ## Actions
 
-Actions spread — one little action somewhere and it spreads all over.
+Actions are functions with implicit inputs or implicit outputs.
+
+Depending on anything or affecting anything outside of function scope means *time dependability* — the result could be different depending on *when* we call the function (any time range is valid) or *how many times* we call the function.
+
+> 🚀 &nbsp; Time dependability is a big deal, it makes code much harder to reuse, test and maintain.
+
+Because actions are the hardest to get right, we separate them so we can devote more focus to them.
 
 <!-- ------------------------------------------------------------- -->
+Actions spread — one little action somewhere and it spreads all over.
 
-In JavaScript, we use functions to implement actions.
 
-***Any function that depends on time is an action*** — the result of an action could be different depending on *when* we call the function (any time range) or *how many times* we call the function.
 
-<mark>***Time dependency is a big deal***</mark>, it makes code much harder to reuse, test and maintain. Because actions are the hardest to get right, we separate them so we can devote more focus to them.
 
 <mark>***Shared mutable state is time dependent***</mark> 
 
 ***Keep actions small***, remove everything that isn’t necessary from the action. Restrict actions to interactions with the world.
 
-Minimize implicit inputs and outputs — any that you can eliminate will improve the testability and reusability of your actions, even if you don’t cross into calculation land. Select and extract the calculation code, convert implicit inputs to arguments, and implicit outputs to return values. Reading 
-
+Minimize implicit inputs and outputs — any that you can eliminate will improve the testability and reusability of your actions, even if you don’t cross into calculation land. Select and extract the calculation code, convert implicit inputs to arguments, and implicit outputs to return values.
 
 Limit time dependency whenever possible — e.g. allow an action to run once.
 
