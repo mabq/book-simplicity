@@ -2,12 +2,13 @@
 
 > 🚀 &nbsp; Prefer data to calculations and calculations to actions.
 
+
 <!-- ------------------------------------------------------------- -->
 
 
-## Data
+## 1) Data
 
-Data means values — in JavaScript, data is implemented using built-in data types.
+In JavaScript, data is implemented using built-in data types.
 
 The set of types consists of:
 
@@ -22,66 +23,87 @@ The set of types consists of:
 
 - *Objects* — collections of properties (key-value pairs).
 
-### Mutability
+### Data mutability
 
-Values are stored in memory — to access a value you need it's address in memory.
+Data are records composed by:
 
-Mutability is the ability of a value to mutate without changing it's address in memory.
+- A data address — where the value is located memory
+- A data value — the actual value of the data
 
-Primitive values are immutable — applying an operation on a primitive value will always create a new value (stored in a different address in memory).
+Addresses are always immutable. Values can be mutable or immutable depending on the data type:
 
-Objects are mutable — applying an operation on an object will mutate the object (at the given address in memory).
+- Primitive values are always immutable — operations always create new addresses with new values, original addresses and values remain unchanged
+- Objects values are mutable by default — operations mutate the value in-place (same address, different value). You can always freeze an object value to make it immutable, just keep in mind that freezing is a shallow operation
 
-### Variables and Scope
+### Variables
 
-Variables are records that bind name identifiers to addresses in memory.
+Variables are records composed by:
 
-Only variables defined with `let` are allowed to change it's address value after declaration (a.k.a rebinding) — don't confuse rebinding with mutability, rebinding is a property of the variable, mutability is a property of the data.
+- A variable identifier — the name that helps us identify the data value
+- A variable pointer — the address of the data value we need to identify
 
-> Immutable data bound to a `let` variable has the same effect as mutable data bound to a `const` variable.
+Identifiers are always immutable. Pointers can be mutable or immutable depending on how the variable is declared:
 
-Scopes determine accessibility to variables — a variable belongs to the scope where it was defined.
+- `const` — immutable pointer, block scope, never hoisted.
+- `let` — mutable pointer, block scope, never hoisted.
+- `var` — mutable pointer, function scope, hoisted.
 
-There are 3 types of scopes:
-- *Global scope* — parent of all scopes.
-- *Function scope* — delimited by the function body.
-- *Block scope* — delimited by brackets.
+Prefer `const` over `let`, avoid `var`.
 
-Scopes nest — inner scopes have access to outer scopes but outer scopes do not have access to inner scopes.
+#### Scopes
+
+Scopes determine accessibility to variables, there are 3 types:
+
+- *Global scope* — the one and greatest, parent of all scopes
+- *Function scope* — delimited by the function body
+- *Block scope* — delimited by brackets
+
+Scopes can nest, you can define a block inside a function inside another function and so on — inner scopes always have access to data in outer scopes, outer scopes never have access to data in inner scopes.
+
+A variable belongs to the scope where it was declared.
 
 <img src="./sources/png/scope.png" alt="Scope" style="width: 260px">
 
-e.g. code inside scope `F` has access to all data bound to variables declared in scopes `D`, `B` and `Global Scope` but does not have access to data bound to variables declared in scopes `A`, `E` and `C`.
+e.g. code inside scope `F` has access to all data values bound to variables declared in scopes `D`, `B` and `Global Scope` but does not have access to data values bound to variables declared in scopes `A`, `E` and `C`.
+ 
+### Data and Functional Programming
 
-Variables defined with `const` and `let` have block scope, avoid `var` which has function scope and is *hoisted*.
+ <!-- Pasar esto a calculations -->
+
+Functional programming principles are based on immutable data.
+### Data and Functional Programming
+
+Functional programming looks at data as ***facts about events*** — a record of something that happened.
+
+As you will see shared mutable data is the root of all evil.
+
+Protect your code by:
+
+- 
+
+Some of the benefits of immutable data structures are:
+
+- Avoid time dependability — code that does not depend on time is much more reliable.
+- Allow for efficient change detection — if an object address didn't change, the object itself did not change.
+- Make cloning relatively cheap — unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
+
+Generally speaking, these benefits can be achieved by making sure you never change any property of an object, array or map, but by always creating an altered copy instead — see notes about Immer below.
 
 
+Some of the benefits of immutable data structures are:
 
-### Equality
+- Avoid time dependability — shared mutable data injects time dependability
+- Improve security — external libraries won't be able to mutate data accessible by out code
+- Allow for efficient change detection — if an object address didn't change, the object itself did not change
+- Make cloning relatively cheap — unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
 
-Primitive values are compared by value — variables do not need to point to the same address in memory.
-
-Objects are compared by address — variables need to point to the same address in memory.
+Generally speaking, these benefits can be achieved by making sure you never change any property of an object, array or map, but by always creating an altered copy instead — see notes about Immer below.
 
 ### Composition
 
 Data can only be composed of more data.
 
 Structure is what gives meaning to data — choosing the right data structure is critical for a straight forward implementation.
-
-### Data and Functional Programming
-
-Functional programming looks at data as ***facts about events*** — a record of something that happened.
-
-Like accounting, functional programming relies on *record-keeping* — once data is created it should never change.
-
-Immutable data structures:
-
-- Avoid time dependability — functions that do not depend on time are much simpler and secure.
-- Allow for efficient change detection — if the reference to an object didn't change, the object itself did not change.
-- Make cloning relatively cheap — unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
-
-Generally speaking, these benefits can be achieved by making sure you never change any property of an object, array or map, but by always creating an altered copy instead — see notes about Immer below.
 
 ### Why data over calculations?
 
@@ -95,15 +117,21 @@ Generally speaking, these benefits can be achieved by making sure you never chan
 
 ## Calculations
 
-Calculations are functions with zero implicit inputs and zero side-effects.
+Calculations are functions with zero implicit inputs and zero implicit outputs.
 
-> 🔥 &nbsp; Any code that injects time-dependability into a function is an implicit input. Any code that provokes a *side-effect* is an implicit output.
+No matter when they are run, or how many times they are run, calculations will always return the same output for the same inputs without causing any *side-effects*.
 
-No matter when they are run, or how many times they are run, calculations will always give the same output for the same inputs — zero *side-effects*.
+### Zero implicit inputs
 
-### Objects as explicit inputs
+> It is impossible to write calculations on mutable data
 
-Function arguments — any other input is implicit.
+Mutable data equals time dependability — relying on a data value that might change over time will 
+
+
+
+Any code that injects time-dependability into a function is an implicit input.
+
+Calculations only accept data values passed as arguments — any other method is implicit.
 
 A function is called with a list of expressions as arguments, before running the function those expressions are turned into values, those values are stored in memory and it's addresses are bound to the variables initialized by function parameters — local variables act like `let` variables.
 
@@ -131,6 +159,14 @@ While effective, the correct implementation of both disciplines throughout the  
 *Defensive-copying* works by never sharing memory addresses of mutable data with untrusted code — making expensive deep-copies every time data enters or leaves our safe-zone.
 
 Immer works by deep-freezing objects before relying on them — new copies are fast shallow copies that use structural sharing.
+
+### Implicit inputs
+
+Rebinding and mutability have the same effect when dealing with implicit inputs.
+
+### Zero implicit outputs
+
+> Any code that provokes a *side-effect* is an implicit output.
 
 ### Composition
 
@@ -161,7 +197,7 @@ Because actions are the hardest to get right, we separate them so we can devote 
 <!-- ------------------------------------------------------------- -->
 Actions spread — one little action somewhere and it spreads all over.
 
-
+Don't allow any code to mutate data values accessible from your code.
 
 
 <mark>***Shared mutable state is time dependent***</mark> 
