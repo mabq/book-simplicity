@@ -1,8 +1,12 @@
 # Simplicity — Eric Normand
 
-This book aims to guide you through two powerful ideas that are very important in functional programming: 1) [distinguishing actions, calculations, and data](ch01.md) and 2) using first-class abstractions.
 
-## General principles
+## Summary
+
+1. [Distinguishing actions, calculations, and data](ch01.md)
+
+
+## Principles
 
 ### Design is about pulling things apart
 
@@ -20,40 +24,11 @@ As we pull things apart, and as functions have single responsibilities, we will 
 
 Good programming at the micro level depends on good coding conventions that help increase the visual distance between good code and bad so that the errors are easier to spot.
 
-Good programming at the macro level depends on good module design.
+Good programming at the macro level depends on good module design — ideally a module should export a small set of powerful functions.
 
-***Good modules have strong cohesion*** — that means that all of the elements are related and working together to *accomplish a specific thing*. Bad modules have weak cohesion, often from poor organization and *trying to do too much*. JavaScript’s functions can be powerful here because we can pass in a function to take care of specific details that the module should not be concerned with.
+- ***Good modules have strong cohesion*** — that means that all of the elements are related and working together to *accomplish a specific thing*. Bad modules have weak cohesion, often from poor organization and *trying to do too much*. JavaScript’s functions can be powerful here because we can pass in a function to take care of specific details that the module should not be concerned with.
+- ***Good modules are loosely coupled*** — you should only need limited knowledge of a module’s interface in order to make good use of it. You should not need details of its implementation. *A good module hides its implementation.* A leaky module invites tight coupling. JavaScript offers many invitations for tight coupling. Mutually dependent modules are very tightly coupled indeed. That is nearly as bad and as grandiose as global variables.
 
-***Good modules are loosely coupled*** — you should only need limited knowledge of a module’s interface in order to make good use of it. You should not need details of its implementation. *A good module hides its implementation.* A leaky module invites tight coupling. JavaScript offers many invitations for tight coupling. Mutually dependent modules are very tightly coupled indeed. That is nearly as bad and as grandiose as global variables.
+Make your module interfaces simple and clean. Minimize dependencies. Good architecture is necessary to give programs enough structure to be able to grow large without collapsing into a puddle of confusion.
 
-Make your module interfaces simple and clean. Minimize dependencies. Good architecture is necessary to give programs enough structure to be able to grow la
-
-
-## Vocabulary
-
-### Side effects
-
-Are any behavior of a function besides the return value.
-
-Side effects are necessary yet problematic, functional programming has lots of tools for working with them.
-
-### Pure functions
-
-Functions that depend only on their arguments and don’t have any side effects.
-
-### Referentially transparent
-
-Means that a call to a calculation can be replaced by its result without affecting the program.
-
-### DOM
-
-The document object model (DOM) is the in-memory representation of an HTML page in a browser.
-
-### Refactoring
-
-Restructuring code without changing the programs behavior.
-
-### Copy-on-write
-
-Copying a mutable value before you modify it is a way to implement immutability.
 

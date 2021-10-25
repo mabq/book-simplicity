@@ -1,0 +1,47 @@
+# Vocabulary
+
+### Side effects
+
+Are any behavior of a function besides the return value.
+
+Side effects are necessary yet problematic, functional programming has lots of tools for working with them.
+
+### Pure functions
+
+Functions that depend only on their arguments and don’t have any side effects.
+
+### Referentially transparent
+
+Means that a call to a calculation can be replaced by its result without affecting the program.
+
+### DOM
+
+The document object model (DOM) is the in-memory representation of an HTML page in a browser.
+
+### Refactoring
+
+Restructuring code without changing the programs behavior.
+
+### Copy-on-write
+
+Copying a mutable value before you modify it is a way to implement immutability.
+
+### Nested data
+
+Data structures inside data structures; we can talk about the inner data structure and the top-level data structure.
+
+### Deep copy
+
+Duplicate all levels of nested data structures, from the top all the way to the bottom.
+
+### Shallow copy
+
+Copying only the top-level data structure in nested data.
+
+### Structural sharing
+
+Two nested data structures referencing the same inner data structure.
+
+### Legacy code
+
+Code (perhaps written with older practices) that we can’t replace at the moment. We have to work with it as is.
