@@ -45,3 +45,12 @@ Two nested data structures referencing the same inner data structure.
 ### Legacy code
 
 Code (perhaps written with older practices) that we can’t replace at the moment. We have to work with it as is.
+
+### Software design
+
+Using one’s aesthetic sense to guide programming choices to improve the ease of coding, testing, and maintaining software.
+
+### Stratified design
+
+A design technique that builds software in layers.
+
