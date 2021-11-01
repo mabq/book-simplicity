@@ -54,3 +54,22 @@ Using one’s aesthetic sense to guide programming choices to improve the ease o
 
 A design technique that builds software in layers.
 
+### Code Smell
+
+A characteristic of a piece of code that might be a symptom of deeper problems.
+
+### Data orientation
+
+Is a style of programming that uses generic data structures to represent facts about events and entities.
+
+### Higher-order
+
+Functions that take other functions as arguments or return functions as their return values.
+
+### Anonymous function
+
+Is a function without a name. That usually happens when we define the function inline.
+
+### Inline function
+
+Is a function defined where it is used. For example, a function might be defined in the argument list.
