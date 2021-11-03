@@ -73,3 +73,8 @@ Is a function without a name. That usually happens when we define the function i
 ### Inline function
 
 Is a function defined where it is used. For example, a function might be defined in the argument list.
+
+### Predicates 
+
+Functions that return `true` or `false`. 
+
