@@ -78,3 +78,6 @@ Is a function defined where it is used. For example, a function might be defined
 
 Functions that return `true` or `false`. 
 
+### The identity function 
+
+Is a function that returns its argument unchanged. It appears to do nothing, but it is useful for indicating just that: Nothing should be done.
