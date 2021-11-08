@@ -1,52 +1,7 @@
-const arrayUtilities = Object.freeze({
-    selectGreatest: (array, init, f) => {
-        return array.reduce((biggerSoFar, elem) => {
-            return f(elem) > f(biggerSoFar) ? elem : biggerSoFar;
-        }, init);
-    },
-    filter: (predicate) => (array) => array.filter(predicate),
-});
-
-const pipe =
-    (...fns) =>
-    (...args) =>
-        fns.reduce((acc, fn) => [fn(...acc)], args)[0];
-
-const purchase = Object.freeze({
-    empty: { total: 0 },
-    total: (purchase) => purchase.total,
-});
-
-const purchases = Object.freeze({
-    count: (purchases) => purchases.length,
-    biggest: (purchases) =>
-        arrayUtilities.selectGreatest(
-            purchases,
-            purchase.empty,
-            purchase.total,
-        ),
-});
-
-const customer = Object.freeze({
-    biggestPurchase: (customer) => purchases.biggest(customer.purchases),
-    isBest: (customer) => purchases.count(customer.purchases) >= 3,
-});
-
-const customers = Object.freeze({
-    selectTop: arrayUtilities.filter(customer.isBest),
-    biggestPurchase: (customers) => customers.map(customer.biggestPurchase),
-});
-
-const topCustomersBiggestPurchase = pipe(
-    customers.selectTop,
-    customers.biggestPurchase,
-);
-
-/* ---------------------------------------------------------------- */
-
-const customersData = [
+const data = [
     {
         name: 'Eduardo',
+        email: 'eduardo@me.com',
         purchases: [
             {
                 items: 100000,
@@ -56,6 +11,7 @@ const customersData = [
     },
     {
         name: 'Jonathan',
+        email: 'jonathan@me.com',
         purchases: [
             {
                 items: 1,
@@ -73,6 +29,7 @@ const customersData = [
     },
     {
         name: 'Mery',
+        email: 'mery@me.com',
         purchases: [
             {
                 items: 1,
@@ -86,6 +43,7 @@ const customersData = [
     },
     {
         name: 'Juanmar',
+        email: 'juanmar@me.com',
         purchases: [
             {
                 items: 1,
@@ -110,7 +68,18 @@ const customersData = [
         ],
     },
     {
+        name: 'Manu',
+        email: 'manu_banderas@hotmail.com',
+        purchases: [
+            {
+                items: 1,
+                total: 2500,
+            },
+        ],
+    },
+    {
         name: 'Josema',
+        email: 'josema@me.com',
         purchases: [
             {
                 items: 1,
@@ -128,4 +97,4 @@ const customersData = [
     },
 ];
 
-console.log(topCustomersBiggestPurchase(customersData));
+export default data;
