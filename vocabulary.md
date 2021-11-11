@@ -81,3 +81,7 @@ Functions that return `true` or `false`.
 ### The identity function 
 
 Is a function that returns its argument unchanged. It appears to do nothing, but it is useful for indicating just that: Nothing should be done.
+
+### Stream fusion
+
+The process of o ing a chain of map(), filter(), and reduce()

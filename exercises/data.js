@@ -33,11 +33,11 @@ const data = [
         purchases: [
             {
                 items: 1,
-                total: 1000,
+                total: 5,
             },
             {
                 items: 1,
-                total: 100000,
+                total: 10,
             },
         ],
     },
