@@ -10,14 +10,10 @@ const fusionPredicates =
     (elem) =>
         fns.every((fn) => fn(elem));
 
-const fusionSequences =
-    (...fns) =>
-    (elem) =>
-        fns.reduce((acc, fn) => fn(acc), elem);
+const inspect = (label) => (x) => {
+    console.log(label);
+    console.log(x);
+    return x;
+};
 
-export default Object.freeze({
-    identity,
-    pipe,
-    fusionPredicates,
-    fusionSequences,
-});
+export { fusionPredicates, identity, inspect, pipe };

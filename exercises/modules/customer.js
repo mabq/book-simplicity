@@ -1,10 +1,11 @@
-import purchases from './purchases.js';
-import composition from './composition.js';
+import { pipe, fusionPredicates } from './composition.js';
 
-const { pipe, fusionPredicates } = composition;
-const { getCount, getBiggest, getAverageOfTotal, hasBigPurchase } = purchases;
-
-/* ---------------------------------------------------------------- */
+import {
+    getCount,
+    getBiggest,
+    getAverageOfTotal,
+    hasBigPurchase,
+} from './purchases.js';
 
 const getPurchases = (customer) => customer.purchases;
 const getEmail = (customer) => customer.email;
@@ -27,15 +28,13 @@ const isNew = has1Purchase;
 const isBest = has3PurchasesOrMore;
 const isBigSpender = fusionPredicates(has2PurchasesOrMore, hasSomeBigPurchase);
 
-/* ---------------------------------------------------------------- */
-
-export default Object.freeze({
-    getPurchases,
-    getEmail,
-    getPurchasesCount,
+export {
     getBiggestPurchase,
+    getEmail,
+    getPurchases,
     getPurchasesAverage,
-    isNew,
+    getPurchasesCount,
     isBest,
     isBigSpender,
-});
+    isNew,
+};

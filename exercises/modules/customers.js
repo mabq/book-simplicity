@@ -1,37 +1,39 @@
-import arrayUtilities from './array_utilities.js';
-import composition from './composition.js';
-import customer from './customer.js';
+import { filter, map, average } from './array_utilities.js';
 
-const { filter, map, average } = arrayUtilities;
-const { pipe } = composition;
+import { pipe } from './composition.js';
 
-/* ---------------------------------------------------------------- */
+import {
+    isBest,
+    isNew,
+    isBigSpender,
+    getBiggestPurchase,
+    getEmail,
+    getPurchasesAverage,
+} from './customer.js';
 
-const selectBestCustomers = filter(customer.isBest);
+const selectBestCustomers = filter(isBest);
 
-const selectNewCustomers = filter(customer.isNew);
+const selectNewCustomers = filter(isNew);
 
-const selectBigSpenders = filter(customer.isBigSpender);
+const selectBigSpenders = filter(isBigSpender);
 
-const selectBiggestPurchase = map(customer.getBiggestPurchase);
+const selectBiggestPurchase = map(getBiggestPurchase);
 
 const getTopPurchases = pipe(selectBestCustomers, selectBiggestPurchase);
 
-const getEmails = map(customer.getEmail);
+const getEmails = map(getEmail);
 
 const getNewCustomersEmails = pipe(selectNewCustomers, getEmails);
 
-const getAverageOfTotal = map(customer.getPurchasesAverage);
+const getAverageOfTotal = map(getPurchasesAverage);
 
-/* ---------------------------------------------------------------- */
-
-export default Object.freeze({
-    selectBestCustomers,
-    selectNewCustomers,
-    selectBigSpenders,
-    selectBiggestPurchase,
-    getEmails,
-    getTopPurchases,
-    getNewCustomersEmails,
+export {
     getAverageOfTotal,
-});
+    getEmails,
+    getNewCustomersEmails,
+    getTopPurchases,
+    selectBestCustomers,
+    selectBiggestPurchase,
+    selectBigSpenders,
+    selectNewCustomers,
+};

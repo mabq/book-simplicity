@@ -1,22 +1,14 @@
-import arrayUtilities from './array_utilities.js';
-import purchase from './purchase.js';
+import { selectGreatest, some, averageWith } from './array_utilities.js';
 
-const { selectGreatest, some, averageWith } = arrayUtilities;
-
-/* ---------------------------------------------------------------- */
+import { getTotal, emptyPurchase, isBigPurchase } from './purchase.js';
 
 const getCount = (purchases) => purchases.length;
 
-const getBiggest = selectGreatest(purchase.getTotal, purchase.empty);
+const getBiggest = selectGreatest(getTotal, emptyPurchase);
 
 // const getAverageOfTotal = pipe(getTotals, average); // this would create intermediary arrays
-const getAverageOfTotal = averageWith(purchase.getTotal); // this does not
+const getAverageOfTotal = averageWith(getTotal); // this does not
 
-const hasBigPurchase = some(purchase.isBigPurchase);
+const hasBigPurchase = some(isBigPurchase);
 
-export default Object.freeze({
-    getCount,
-    getBiggest,
-    getAverageOfTotal,
-    hasBigPurchase,
-});
+export { getAverageOfTotal, getBiggest, getCount, hasBigPurchase };

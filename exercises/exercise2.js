@@ -1,35 +1,38 @@
-import array_utilities from './modules/array_utilities.js';
-import composition from './modules/composition.js';
+import {
+    movingAverage,
+    chunks,
+    chunksAverage,
+    sequentialWindows,
+} from './modules/array_utilities.js';
 
-const { map, sequentialWindowSlicer, sequentialAverage } = array_utilities;
-const { pipe, identity } = composition;
+import { pipe } from './modules/composition.js';
 
-const myArray = [1, 2, 3, 4, 5];
+/* ---------------------------------------------------------------- */
 
-// console.log(sequentialWindowSlicer(3)(myArray));
+const myArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const window = 3;
 
-// console.log(sequentialAverage(identity)(myArray));
+// console.log(chunks(window)(myArray));
+console.log(chunksAverage(window)(myArray));
 
-const x = pipe(sequentialWindowSlicer(3), map(sequentialAverage(identity)));
+/* ---------------------------------------------------------------- */
 
-console.log(x(myArray));
+const chunkWith =
+    (f) =>
+    (size, jump = size) =>
+    (array) => {
+        const result = [];
+        const length = array.length;
+        for (let i = 0; i < length; i += jump) {
+            result.push(f(array.slice(i, i + size)));
+        }
+        return result;
+    };
 
-// function averageWindow(array, window) {
-//     const answer = [];
-//     let sum, count, idx;
-//     for (let i = 0; i < array.length; i += 1) {
-//         sum = 0;
-//         count = 0;
-//         for (let j = 0; j < window; j += 1) {
-//             idx = i + j;
-//             if (idx < array.length) {
-//                 sum += array[idx];
-//                 count += 1;
-//             }
-//             answer.push(sum / count);
-//         }
-//     }
-//     return answer;
-// }
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-// console.log(averageWindow(myArray, 3));
+const identity = (x) => x;
+
+const chunk = chunkWith(identity);
+
+console.log(chunk(3, 1)(arr));

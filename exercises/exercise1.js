@@ -1,7 +1,15 @@
-import customers from './modules/customers.js';
-import customerData from './data.js';
+import {
+    getTopPurchases,
+    getNewCustomersEmails,
+    selectBigSpenders,
+    getAverageOfTotal,
+} from './modules/customers.js';
 
-console.log(customers.getTopPurchases(customerData));
-console.log(customers.getNewCustomersEmails(customerData));
-console.log(customers.selectBigSpenders(customerData));
-console.log(customers.getAverageOfTotal(customerData));
+import { customers } from './data.js';
+
+/* ---------------------------------------------------------------- */
+
+console.log(getTopPurchases(customers));
+console.log(getNewCustomersEmails(customers));
+console.log(selectBigSpenders(customers));
+console.log(getAverageOfTotal(customers));
