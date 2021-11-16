@@ -1,4 +1,5 @@
 import { identity, pipe, inspect } from './composition.js';
+
 import { isPositiveInteger } from './validators.js';
 
 import {
@@ -6,6 +7,8 @@ import {
     keepGreatestWithR,
     sequentialWindowsWithR,
 } from './reducers.js';
+
+import { randomIntFromInterval } from './math.js';
 
 const getLastElement = (array) => array[array.length - 1];
 
@@ -21,29 +24,27 @@ const averageWith = (f) => (array) => sumWith(f, 0)(array) / array.length;
 
 const average = averageWith(identity);
 
-const sequentialWindows = (window) =>
-    reduceWith(sequentialWindowsWithR(window, identity), []);
-
-const movingAverage = (window) =>
-    reduceWith(sequentialWindowsWithR(window, average), []);
-
-const chunksWith = (f) => (size) => (array) => {
-    // a manual loop is much faster because there is no need to iterate over
-    // each element of the array
-    if (!isPositiveInteger(size)) {
-        throw new Error("'size' must be a positive integer");
-    }
-    const result = [];
-    const length = array.length;
-    for (let i = 0; i < length; i += size) {
-        result.push(f(array.slice(i, i + size)));
-    }
-    return result;
+const windowsWith = (windowSize, jump = windowSize, f) => {
+    if (!isPositiveInteger(windowSize))
+        throw new Error("'subArrayLength' must be a positive integer");
+    if (!isPositiveInteger(jump))
+        throw new Error("'subArrayLength' must be a positive integer");
+    return (array) => {
+        const result = [];
+        let index = 0;
+        // no need to iterate over each element
+        const length = array.length;
+        while (index < length) {
+            result.push(f(array.slice(index, index + windowSize)));
+            index += jump;
+        }
+        return result;
+    };
 };
 
-const chunks = chunksWith(identity);
+const chunks = (size) => windowsWith(size, size, identity);
 
-const chunksAverage = chunksWith(average);
+const movingAverage = (size) => windowsWith(size, 1, average);
 
 const filter = (predicate) => (array) => array.filter(predicate);
 
@@ -55,12 +56,22 @@ const flatN = (depth) => (array) => array.flat(depth);
 
 const flat = flatN(Infinity);
 
+const sortBy = (compare) => (array) => [...array].sort(compare);
+
+const compareWith =
+    (f, asc = true) =>
+    (a, b) =>
+        asc ? f(a) - f(b) : f(b) - f(a);
+
+const getRandomElement = (array) => {
+    const index = randomIntFromInterval(0, array.length - 1);
+    return array[index];
+};
+
 export {
     average,
     averageWith,
     chunks,
-    chunksAverage,
-    chunksWith,
     filter,
     flatN,
     flat,
@@ -68,9 +79,12 @@ export {
     map,
     reduceWith,
     selectGreatest,
-    sequentialWindows,
     movingAverage,
     some,
     sum,
     sumWith,
+    windowsWith,
+    sortBy,
+    compareWith,
+    getRandomElement,
 };

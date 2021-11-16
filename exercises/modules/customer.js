@@ -1,4 +1,4 @@
-import { pipe, fusionPredicates } from './composition.js';
+import { pipe, fusionAndPredicates } from './composition.js';
 
 import {
     getCount,
@@ -26,7 +26,10 @@ const has3PurchasesOrMore = hasXorMorePurchases(3);
 
 const isNew = has1Purchase;
 const isBest = has3PurchasesOrMore;
-const isBigSpender = fusionPredicates(has2PurchasesOrMore, hasSomeBigPurchase);
+const isBigSpender = fusionAndPredicates(
+    has2PurchasesOrMore,
+    hasSomeBigPurchase,
+);
 
 export {
     getBiggestPurchase,

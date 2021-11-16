@@ -5,15 +5,20 @@ const pipe =
     (...args) =>
         fns.reduce((acc, fn) => [fn(...acc)], args)[0];
 
-const fusionPredicates =
-    (...fns) =>
-    (elem) =>
-        fns.every((fn) => fn(elem));
-
 const inspect = (label) => (x) => {
     console.log(label);
     console.log(x);
     return x;
 };
 
-export { fusionPredicates, identity, inspect, pipe };
+const fusionAndPredicates =
+    (...fns) =>
+    (elem) =>
+        fns.every((fn) => fn(elem));
+
+const fusionOrPredicates =
+    (...fns) =>
+    (elem) =>
+        fns.some((fn) => fn(elem));
+
+export { fusionAndPredicates, fusionOrPredicates, identity, inspect, pipe };
